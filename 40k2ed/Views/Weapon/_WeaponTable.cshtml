@@ -1,7 +1,9 @@
-﻿@model             WeaponTable
+﻿@using _40k2ed.Models.EntityModels
+@using _40k2ed.Models.DisplayModels
+@model _40k2ed.Models.DisplayModels.WeaponTable
 
 <div class="table-responsive">
-	<table class="table table-striped table-hover" id="sortableTable">
+	<table class="table weapontable table-hover" id="sortableTable">
 		<thead>
 			<tr>
 				<td class='title text-center align-bottom' colspan=100%>
@@ -11,20 +13,20 @@
 				</td>
 			</tr>
 			<tr>
-				<th class="sortable text-center align-bottom" rowspan="2" onclick="sortTable(0)">Weapon</th>
-				<th class="sortable text-center align-bottom" colspan="2">Range</th>
-				<th class="sortable text-center align-bottom" colspan="2">To Hit</th>
-				<th class="sortable text-center align-bottom" rowspan="2" onclick="sortTable(5)">Strength</th>
-				<th class="sortable text-center align-bottom" rowspan="2" onclick="sortTable(6)">Damage</th>
-				<th class="sortable text-center align-bottom" rowspan="2" onclick="sortTable(7)">Save<br />Mod.</th>
-				<th class="sortable text-center align-bottom" rowspan="2" onclick="sortTable(8)">Armour<br />Pene.</th>
-				<th class="text-center align-bottom" rowspan="2">Special</th>
+				<th class="sortable" rowspan="2" onclick="sortTable(0)">Weapon</th>
+				<th class="sortable" colspan="2">Range</th>
+				<th class="sortable" colspan="2">To Hit</th>
+				<th class="sortable" rowspan="2" onclick="sortTable(5)">Strength</th>
+				<th class="sortable" rowspan="2" onclick="sortTable(6)">Damage</th>
+				<th class="sortable" rowspan="2" onclick="sortTable(7)">Save<br />Mod.</th>
+				<th class="sortable" rowspan="2" onclick="sortTable(8)">Armour<br />Pene.</th>
+				<th class="" rowspan="2">Special</th>
 			</tr>
 			<tr>
-				<th class="sortable text-center" onclick="sortTable(1)">Short</th>
-				<th class="sortable text-center" onclick="sortTable(2)">Long</th>
-				<th class="sortable text-center" onclick="sortTable(3)">Short</th>
-				<th class="sortable text-center" onclick="sortTable(4)">Long</th>
+				<th class="sortable" onclick="sortTable(1)">Short</th>
+				<th class="sortable" onclick="sortTable(2)">Long</th>
+				<th class="sortable" onclick="sortTable(3)">Short</th>
+				<th class="sortable" onclick="sortTable(4)">Long</th>
 			</tr>
 		</thead>
 		<tbody>

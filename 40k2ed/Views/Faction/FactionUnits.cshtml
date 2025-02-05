@@ -1,0 +1,18 @@
+﻿@using _40k2ed.Models.EntityModels
+@using _40k2ed.Models.ViewModels
+@model _40k2ed.Models.ViewModels.FactionUnits
+<div>
+	<h1>
+		@Model.Faction.Name Units
+	</h1>
+	@foreach (FactionCategoryUnitList factionUnitList in Model.FactionCategoriesUnitLists)
+	{
+		<h3>@factionUnitList.FactionCategory.Name</h3>
+		@foreach (Unit unit in factionUnitList.Units)
+		{
+			<div>
+				@unit.Name (@unit.Cost points)
+			</div>
+		}
+	}
+</div>

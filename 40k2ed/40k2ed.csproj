@@ -17,7 +17,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Models\BindingModels\" />
     <Folder Include="Views\Unit\" />
+    <Folder Include="wwwroot\image\" />
   </ItemGroup>
 
 </Project>

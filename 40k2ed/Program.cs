@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using _40k2ed.Data;
+using _40k2ed.Models.EntityModels;
+using Microsoft.AspNetCore.Identity;
 
 namespace _40k2ed
 {
@@ -8,6 +10,7 @@ namespace _40k2ed
         public static void Main(string[] args)
         {
             WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();

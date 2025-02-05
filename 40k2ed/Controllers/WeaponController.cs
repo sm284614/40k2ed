@@ -1,7 +1,6 @@
-﻿using _40k2ed.Data;
-using Microsoft.AspNetCore.Mvc;
-using _40k2ed.Models;
-using _40k2ed.Models.DataTable;
+﻿using Microsoft.AspNetCore.Mvc;
+using _40k2ed.Data;
+using _40k2ed.Models.EntityModels;
 
 namespace _40k2ed.Controllers
 {
@@ -41,10 +40,10 @@ namespace _40k2ed.Controllers
                                   .ToList();
 
             // Construct the WeaponTable with Weapons and their Rules
-            var weaponTable = new Models.Display.WeaponTable
+            var weaponTable = new Models.DisplayModels.WeaponTable
             {
                 WeaponType = weaponType,
-                Weapons = weapons.Select(w => new Models.Display.WeaponWithAllRules
+                Weapons = weapons.Select(w => new Models.DisplayModels.WeaponWithAllRules
                 {
                     Weapon = w,
                     SpecialRules = weaponRules.Where(wr => wr.WeaponId == w.WeaponId).Select(wr => wr.Rule).ToList()

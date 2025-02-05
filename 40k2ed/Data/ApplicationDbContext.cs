@@ -1,13 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System.Xml;
-using _40k2ed.Models.DataTable;
-using _40k2ed.Models.Display;
+using _40k2ed.Models.EntityModels;
+using _40k2ed.Models.DisplayModels;
 
 namespace _40k2ed.Data
 {
-    public class ApplicationDbContext :DbContext
+    public class ApplicationDbContext : DbContext
     {
+        public DbSet<User> User { get; set; }
         public DbSet<Unit> Unit { get; set; }
         public DbSet<Weapon> Weapon { get; set; }
         public DbSet<WeaponType> WeaponType { get; set; }
@@ -15,10 +16,10 @@ namespace _40k2ed.Data
         public DbSet<WeaponRule> WeaponRule { get; set; }
         public DbSet<WeaponWeaponRule> WeaponWeaponRule { get; set; }
         public DbSet<Faction> Faction { get; set; }
-        public DbSet<FactionUnit> FactionUnit { get; set; }
+        public DbSet<FactionCategory> FactionCategory { get; set; }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
-            
+
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -31,7 +32,9 @@ namespace _40k2ed.Data
             modelBuilder.Entity<Faction>()
                 .Property(e => e.AlliesOnly)
                 .HasConversion(boolConverter);
-
+            modelBuilder.Entity<User>()
+                .Property(e => e.Confirmed)
+                .HasConversion(boolConverter);
             modelBuilder.Entity<WeaponTable>().HasNoKey();
             modelBuilder.Entity<WeaponWeaponRule>().HasNoKey();
             modelBuilder.Entity<WeaponWithAllRules>().HasNoKey();

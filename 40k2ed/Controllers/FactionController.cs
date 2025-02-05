@@ -1,6 +1,7 @@
 ﻿using _40k2ed.Data;
 using Microsoft.AspNetCore.Mvc;
-using _40k2ed.Models.DataTable;
+using _40k2ed.Models.EntityModels;
+using _40k2ed.Models.ViewModels;
 
 namespace _40k2ed.Controllers
 {
@@ -16,13 +17,37 @@ namespace _40k2ed.Controllers
             List<Faction> factions = _db.Faction.ToList();
             return View(factions);
         }
-        public IActionResult FactionUnit(int factionId)
+        public IActionResult FactionUnits(int factionId)
         {
-            var units = _db.Unit
-                .Join(_db.FactionUnit, u => u.UnitId, fu => fu.UnitId, (u, fu) => new { Unit = u, FactionUnit = fu })
-                .Where(u => u.FactionUnit.FactionId == factionId);
+            var faction = _db.Faction.Find(factionId);
+            if (faction == null)
+            {
+                return NotFound();
+            }
+            var factionCategories = _db.FactionCategory
+                .Where(fc => fc.FactionId == factionId)
+                .ToList();
+            var factionUnits = new FactionUnits
+            {
+                Faction = faction,
+                FactionCategoriesUnitLists = new List<FactionCategoryUnitList>()
+            };
 
-            return View();
+            foreach (FactionCategory factionCategory in factionCategories)
+            {
+                var unit = _db.Unit
+                    .Where(unit => unit.FactionCategoryId == factionCategory.FactionCategoryId)
+                    .ToList();
+                var factionCategoryUnitList = new FactionCategoryUnitList
+                {
+                    FactionCategory = factionCategory,
+                    Units = unit
+                };
+                factionUnits.FactionCategoriesUnitLists.Add(factionCategoryUnitList);
+            }          
+
+            return View(factionUnits);
         }
+
     }
 }
