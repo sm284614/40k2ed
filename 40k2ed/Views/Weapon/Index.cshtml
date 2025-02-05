@@ -1,0 +1,76 @@
+﻿@model List<WeaponType>
+<script>
+	let sortOrder = {}; // Store sorting order per column
+</script>
+<div class="container">
+	<div class="align-content-center text-center">
+		<h1>Weapons of the 41st Millennium</h1>
+	</div>
+	<div class="d-flex gap-2">
+		@foreach (WeaponType weaponType in Model)
+		{
+			<button class="btn btn-primary w-100 weapon-button" data-id="@weaponType.WeaponTypeId">
+				@weaponType.Name
+			</button>
+		}
+	</div>
+	<div id="weaponTableContainer" class="mt-4"></div>
+</div>
+
+<!-- jQuery for AJAX -->
+<script src="/_framework/aspnetcore-browser-refresh.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+	$(document).ready(
+		function () {
+		$(".weapon-button").click(function () {
+			var weaponTypeId = $(this).data("id");
+			console.log("Button clicked, weaponTypeId: " + weaponTypeId);  // Debugging line
+			// Show "Loading..." message while waiting for the AJAX request
+			$("#weaponTableContainer").html("<p class='text-info'>Loading...</p>");
+
+			$.ajax({
+				url: "/Weapon/WeaponTable",
+				type: "GET",
+				data: { weaponTypeId: weaponTypeId },
+				success: function (data) {
+					 console.log("AJAX call success", data);  // Check response from server
+					$("#weaponTableContainer").html(data).fadeIn; // Load table inside div
+				},
+				error: function () {
+					console.log("AJAX call failed");  // Debugging line
+					$("#weaponTableContainer").html("<p class='text-danger'>Error loading data.</p>");
+				}
+			});
+		});
+	});
+
+	function sortTable(columnIndex) {
+		let table = document.getElementById("sortableTable");
+		let tbody = table.getElementsByTagName("tbody")[0];
+		let rows = Array.from(tbody.getElementsByTagName("tr"));
+
+		// Determine sort direction
+		sortOrder[columnIndex] = !sortOrder[columnIndex]; // Toggle between true (asc) and false (desc)
+		let ascending = sortOrder[columnIndex];
+
+		rows.sort((rowA, rowB) => {
+			let cellA = rowA.getElementsByTagName("td")[columnIndex].innerText.trim();
+			let cellB = rowB.getElementsByTagName("td")[columnIndex].innerText.trim();
+
+			// Try parsing numbers if possible
+			let numA = parseFloat(cellA);
+			let numB = parseFloat(cellB);
+			if (!isNaN(numA) && !isNaN(numB)) {
+				return ascending ? numA - numB : numB - numA;
+			}
+
+			// Default: Sort as strings
+			return ascending ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA);
+		});
+
+		// Reattach sorted rows
+		tbody.innerHTML = "";
+		rows.forEach(row => tbody.appendChild(row));
+	}
+</script>
