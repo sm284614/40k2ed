@@ -3,6 +3,6 @@
     public class SaveType
     {
         public int SaveTypeId { get; set; }
-        public string Name { get; set; }
+        public string Name { get; set; } = "";
     }
 }

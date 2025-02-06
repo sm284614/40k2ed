@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using _40k2ed.Models.EntityModels;
 using _40k2ed.Models.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace _40k2ed.Controllers
 {
@@ -12,11 +13,15 @@ namespace _40k2ed.Controllers
         {
             _db = db;
         }
+        [AllowAnonymous]
         public IActionResult Index()
         {
-            List<Faction> factions = _db.Faction.ToList();
+            List<Faction> factions = _db.Faction
+                .Where(f => f.Source == "Codex")
+                .ToList();
             return View(factions);
         }
+        [AllowAnonymous]
         public IActionResult FactionUnits(int factionId)
         {
             var faction = _db.Faction.Find(factionId);

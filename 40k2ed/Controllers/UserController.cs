@@ -1,4 +1,5 @@
 ﻿using _40k2ed.Data;
+using _40k2ed.Models;
 using _40k2ed.Models.EntityModels;
 using _40k2ed.Models.ViewModels;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -7,17 +8,19 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace _40k2ed.Controllers
 {
     public class UserController : Controller
     {
-        private readonly ApplicationDbContext _db;
-        private readonly IPasswordHasher<User> _passwordHasher;
-        public UserController(ApplicationDbContext db, IPasswordHasher<User> passwordHasher)
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
+
+        public UserController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
         {
-            _db = db;
-            _passwordHasher = passwordHasher;
+            _userManager = userManager;
+            _signInManager = signInManager;
         }
         public IActionResult Index()
         {
@@ -34,8 +37,7 @@ namespace _40k2ed.Controllers
         public async Task<IActionResult> Login(string email, string password, bool rememberMe)
         {
             // Find user by email
-            var user = await _db.User
-                .FirstOrDefaultAsync(u => u.Email == email);
+            var user = await _userManager.FindByEmailAsync(email);
 
             if (user == null)
             {
@@ -43,84 +45,72 @@ namespace _40k2ed.Controllers
                 return View();
             }
 
-            // Verify password hash (you should implement a method to verify the password)
-            if (VerifyPassword(password, user.PasswordHash))
+            // Verify password using ASP.NET Identity
+            var result = await _signInManager.PasswordSignInAsync(user, password, rememberMe, lockoutOnFailure: false);
+
+            if (result.Succeeded)
             {
-                // Log in user (you could use session or authentication cookie)
-                await SignInUser(user, rememberMe);
                 return RedirectToAction("Index", "Home");
             }
 
             ModelState.AddModelError(string.Empty, "Invalid login attempt.");
             return View();
         }
-        private bool VerifyPassword(string enteredPassword, string storedPasswordHash)
+        // POST: /User/Logout
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Logout()
         {
-            // Add your password hashing logic here (e.g., bcrypt, PBKDF2, etc.)
-            return enteredPassword == storedPasswordHash;  // This is just a placeholder
+            await _signInManager.SignOutAsync();
+            return RedirectToAction("Index", "Home");
         }
-        private async Task SignInUser(User user, bool rememberMe)
-        {
-            // Sign in logic (can use ASP.NET Core Identity or a custom method)
-            var claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.Name, user.Name),
-            new Claim(ClaimTypes.Email, user.Email),
-        };
 
-            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-            var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
 
-            var properties = new AuthenticationProperties
-            {
-                IsPersistent = rememberMe
-            };
-
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claimsPrincipal, properties);
-        }
+        //registration
         public IActionResult Register()
         {
-            return View();
+            return View(new RegisterViewModel());
         }
-        // Register POST action to handle form submission
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
             if (ModelState.IsValid)
             {
-                // Check if the email already exists in the database
-                var existingUser = await _db.User
-                    .FirstOrDefaultAsync(u => u.Email == model.Email);
+                // Check if the email is already in use
+                var existingUser = await _userManager.FindByEmailAsync(model.Email);
                 if (existingUser != null)
                 {
                     ModelState.AddModelError("Email", "This email is already in use.");
                     return View(model);
                 }
 
-                // Create a new user and hash their password
-                var user = new User
+                // Create the user object using IdentityUser or your custom Identity class
+                var user = new ApplicationUser
                 {
                     Name = model.Name,
+                    UserName = model.Email, // Identity requires UserName (often set to Email)
                     Email = model.Email,
-                    RegisteredDate = DateTime.UtcNow,
-                    Confirmed = false, // Set the default to false until confirmed via email
+                    EmailConfirmed = true
                 };
-                user.PasswordHash = _passwordHasher.HashPassword(user, model.Password);
 
-                // Save user to the database
-                _db.User.Add(user);
-                await _db.SaveChangesAsync();
+                // Create user with hashed password
+                var result = await _userManager.CreateAsync(user, model.Password);
+                if (result.Succeeded)
+                {
 
-                // Here you can send a confirmation email (not shown in this example)
-                // SendConfirmationEmail(user); 
+                    return RedirectToAction("Login");
+                }
 
-                // Redirect to a confirmation page or login
-                return RedirectToAction("Login");
+                // Add identity errors to ModelState
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
             }
 
-            // Return back to the view if validation fails
             return View(model);
-        }
+        }       
     }
 }

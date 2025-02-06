@@ -4,6 +4,6 @@
     {
         public long ArmyUnitEquipmentId { get; set; }
         public long ArmyUnitId { get; set; }
-        public string EquipmentType { get; set; }
+        public string EquipmentType { get; set; } = "";
     }
 }

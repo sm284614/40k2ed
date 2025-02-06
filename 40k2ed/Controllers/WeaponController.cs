@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using _40k2ed.Data;
 using _40k2ed.Models.EntityModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace _40k2ed.Controllers
 {
@@ -11,11 +12,13 @@ namespace _40k2ed.Controllers
         {
             _db = db;
         }
+        [AllowAnonymous]
         public IActionResult Index()
         {
             List<WeaponType> weaponTypes = _db.WeaponType.ToList();
             return View(weaponTypes);
         }
+        [AllowAnonymous]
         [HttpGet]
         public IActionResult WeaponTable(int weaponTypeId)
         {
@@ -55,7 +58,10 @@ namespace _40k2ed.Controllers
             //return View(weaponTable);
         }
 
-
+        public IActionResult Detail(int weaponId)
+        {
+            return View();
+        }
 
     }
 }

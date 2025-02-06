@@ -11,7 +11,10 @@
 		@foreach (Unit unit in factionUnitList.Units)
 		{
 			<div>
-				@unit.Name (@unit.Cost points)
+				<a asp-controller="Unit" asp-action="Index" asp-route-unitId="@unit.UnitId" class="">
+					@unit.Name 
+				</a>
+				(@unit.Cost points)
 			</div>
 		}
 	}

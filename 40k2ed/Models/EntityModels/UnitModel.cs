@@ -5,7 +5,7 @@
         public int UnitModelId { get; set; }
         public int UnitId { get; set; }
         public int ModelId { get; set; }
-        public string DisplayName { get; set; }
+        public string DisplayName { get; set; } = "";
         public int SquadOrder { get; set; }
         public int DefaultQuantity { get; set; }
         public int MinimumQuantity { get; set; }

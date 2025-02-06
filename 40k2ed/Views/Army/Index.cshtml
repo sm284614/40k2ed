@@ -1,0 +1,85 @@
+﻿@using _40k2ed.Models.ViewModels
+@inject Microsoft.AspNetCore.Identity.UserManager<ApplicationUser> _userManager;
+
+@{
+	var user = await _userManager.GetUserAsync(User); // Retrieve the ApplicationUser instance
+	var customName = user?.Name; // Use your custom field (Name) from ApplicationUser
+}
+
+<div class="container">
+	<div class="container-fluid">
+		<div class="d-flex justify-content-between align-items-center">
+			<h1>Armies for @customName</h1>
+			<a asp-controller="Army" asp-action="Create" class="btn btn-primary">Create New</a>
+		</div>
+	</div>
+	<div class="">
+		<table class="table table-hover">
+			<thead>
+				<tr>
+					<th></th>
+					<th>Name</th>
+					<th>Faction</th>					
+					<th>Description</th>
+					<th>Points Limit</th>
+					<th>Date Created</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				@if (Model.Count == 0)
+				{
+					<tr>
+						<td colspan="100%">
+							No armies saved
+						</td>
+					</tr>
+				}
+				else
+				{
+					@foreach (ArmyViewModel army in Model)
+					{
+						<tr class="align-middle">
+							<td>
+								<img src="@($"image/faction/icon/{army.FactionName}.svg")" alt="@army.FactionName" style="height:30px; width: 30px;">
+							</td>
+							<td>
+								<a asp-controller="Army" asp-action="Edit" asp-route-armyId="@army.ArmyID" class="">
+									@army.Name
+								</a>
+							</td>
+							<td>@army.FactionName</td>
+							<td>@army.Description</td>
+							<td>@army.PointsLimit</td>
+							<td>@army.DateCreated</td>
+							<td class="text-end">
+								<a href="#" class="btn btn-secondary align-middle" data-army-id="@army.ArmyID" data-army-name="@army.Name" onclick="confirmDelete(this)">
+									<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
+										<path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z" />
+									</svg>
+									Delete
+								</a>
+							</td>
+
+						</tr>
+					}
+				}
+			</tbody>
+		</table>
+	</div>
+</div>
+
+<script type="text/javascript">
+	function confirmDelete(element) {
+		var armyId = $(element).data('army-id');
+		var description = $(element).data('army-name');
+
+		// Show confirmation dialog
+		var confirmation = confirm('Really delete "' + description + '"?');
+
+		if (confirmation) {
+			// If confirmed, redirect to the delete action
+			window.location.href = '/Army/Delete?armyId=' + armyId;
+		}
+	}
+</script>

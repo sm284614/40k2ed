@@ -1,0 +1,73 @@
+﻿@using _40k2ed.Models.EntityModels
+@using _40k2ed.Models.ViewModels
+@model ArmyViewModel
+@{
+    ViewData["Title"] = "Create New Army";
+    var factions = ViewBag.Factions as List<Faction>; // Get factions from ViewBag
+}
+
+<div class="container mt-4">
+    <h1 class="text-center">Create New Army</h1>
+
+@*     <!-- Faction Selection -->
+    <div class="d-flex flex-wrap justify-content-center my-3">
+        @foreach (var faction in factions)
+        {
+            <label class="m-2">
+                <input type="radio" name="FactionId" value="@faction.FactionId" required />
+                <img src="~/image/faction/icon/@(faction.Name).svg" alt="@faction.Name" class="faction-icon">
+                <br>
+                @faction.Name
+            </label>
+        }
+    </div> *@
+
+    <!-- Army Creation Form -->
+    <form asp-action="Create" method="post">
+
+        <!-- Faction Selection -->
+        <div class="mb-3">
+            <label for="FactionId" class="form-label">Select Faction</label>
+            <select asp-for="FactionId" class="form-control" required>
+                <option value="">-- Select a Faction --</option>
+                @foreach (var faction in ViewBag.Factions as List<Faction>)
+                {
+                    <option value="@faction.FactionId">@faction.Name</option>
+                }
+            </select>
+            <span asp-validation-for="FactionId" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Name" class="form-label">Army Name</label>
+            <input asp-for="Name" class="form-control" required />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Description" class="form-label">Description</label>
+            <textarea asp-for="Description" class="form-control"></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="PointsLimit" class="form-label">Points Limit</label>
+            <input asp-for="PointsLimit" type="number" class="form-control" min="0" required />
+        </div>
+
+        <!-- Submit & Cancel Buttons -->
+        <div class="d-flex justify-content-between">
+            <button type="submit" class="btn btn-success">Create</button>
+            <a asp-controller="Army" asp-action="Index" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<!-- Faction Icon Styling -->
+<style>
+    .faction-icon {
+        width: 75px;
+        height: 75px;
+        object-fit: contain;
+        display: block;
+        margin: 5px auto;
+    }
+</style>

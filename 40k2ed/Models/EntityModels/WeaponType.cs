@@ -3,6 +3,6 @@
     public class WeaponType
     {
         public int WeaponTypeId { get; set; }
-        public string Name { get; set; }
+        public string Name { get; set; } = "";
     }
 }

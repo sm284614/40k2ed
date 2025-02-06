@@ -3,13 +3,13 @@
 @model _40k2ed.Models.DisplayModels.WeaponTable
 
 <div class="table-responsive">
-	<table class="table weapontable table-hover" id="sortableTable">
+	<table class="weapontable" id="sortableTable">
 		<thead>
 			<tr>
-				<td class='title text-center align-bottom' colspan=100%>
-					<h1>
-						@($"{Model.WeaponType.Name}s")
-					</h1>
+				<td class='title text-center align-middle p-1' colspan=100%>
+					<h2>
+						@($"{Model.WeaponType.Name.ToUpper()}S")
+					</h2>
 				</td>
 			</tr>
 			<tr>
@@ -32,7 +32,7 @@
 		<tbody>
 			@foreach (WeaponWithAllRules row in Model.Weapons)
 			{
-				<tr>
+				<tr onclick="window.location='@Url.Action("Detail", "Weapon", new { weaponId = row.Weapon.WeaponId })'" class="weapontablerow">
 					<td class="text-start">@row.Weapon.Name</td>
 					<td class="text-center">@row.Weapon.ShortRangeStart</td>
 					<td class="text-center">@row.Weapon.LongRangeStart</td>
@@ -43,10 +43,10 @@
 					<td class="text-center">@row.Weapon.SaveModifier</td>
 					<td class="text-center">@row.Weapon.ArmourPenetration</td>
 					<td class="text-start">
-						@foreach (WeaponRule rule in row.SpecialRules)
-						{
-							@rule.Name
-						}
+							@foreach (WeaponRule rule in row.SpecialRules)
+							{
+								@rule.Name
+							}
 					</td>
 				</tr>
 			}

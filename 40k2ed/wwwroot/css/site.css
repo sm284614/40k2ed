@@ -42,10 +42,6 @@ table.weapontable {
         background-color: Lightblue;
     }
 
-    table.weapontable tr:hover {
-        background-color: yellow; /* Change to desired hover background color */
-    }
-
     table.weapontable td.title {
         font-family: "Arial black";
         background-color: black;
@@ -114,3 +110,15 @@ table.weapontable {
         table.weapontable td.left {
             text-align: left;
         }
+
+.weapontablerow:hover {
+    background-color: cornflowerblue !important; /* Change to desired hover background color */
+    cursor: pointer;
+}
+table tr.weapontablerow {
+    transition: background-color 0.1s ease; /* Optional: add smooth transition */
+}
+
+.card a {
+    text-decoration: none;
+}
