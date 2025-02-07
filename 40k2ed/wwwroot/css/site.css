@@ -59,7 +59,12 @@ table.weapontable {
         padding-left: 3px;
         padding-right: 3px;
     }
-
+        table.weapontable th.borderright {
+            border-right: 1px solid #000;
+        }
+        table.weapontable th.borderbottom {
+            border-bottom: 1px solid #000;
+        }
         table.weapontable th.misc {
             border-left: 1px solid #000;
             border-right: 1px solid #000;

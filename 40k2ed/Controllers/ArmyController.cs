@@ -31,6 +31,7 @@ namespace _40k2ed.Controllers
                 .Join(_db.Faction, army => army.FactionId, faction => faction.FactionId, (army, faction) => new ArmyViewModel
                 {
                     ArmyID = army.ArmyID,
+                    UserId = army.UserId,
                     Name = army.Name,
                     Description = army.Description,
                     PointsLimit = army.PointsLimit,
@@ -48,6 +49,7 @@ namespace _40k2ed.Controllers
         {
             List<Faction> factions = _db.Faction
                 .Where(f => f.Source == "Codex")
+                .OrderBy(f => f.Name)
                 .ToList();
             ViewBag.Factions = factions;
             return View(new ArmyViewModel()); // Pass an empty ViewModel
@@ -115,5 +117,74 @@ namespace _40k2ed.Controllers
             // Redirect back to the Army index page
             return RedirectToAction("Index");
         }
+
+        [Authorize]
+        public async Task<IActionResult> Edit(int armyId)
+        {
+            // Get the currently logged-in user
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return Unauthorized(); // Ensure user is logged in
+            }
+            // Find the army by ID and include the faction name
+            var army = await _db.Army
+                .Where(a => a.ArmyID == armyId)
+                .Join(_db.Faction,
+                    army => army.FactionId,
+                    faction => faction.FactionId,
+                    (army, faction) => new ArmyViewModel
+                    {
+                        ArmyID = army.ArmyID,
+                        UserId = army.UserId,
+                        Name = army.Name,
+                        Description = army.Description,
+                        PointsLimit = army.PointsLimit,
+                        DateCreated = army.DateCreated,
+                        FactionName = faction.Name, // Get the faction name here
+                        FactionId = faction.FactionId,
+                    })
+                .FirstOrDefaultAsync(); // Get a single item
+
+            if (army == null)
+            {
+                return NotFound();
+            }
+            if (army.UserId != user.Id)
+            {
+                return Forbid(); // Prevent unauthorized access
+            }
+            //get faction units
+            var factionCategories = _db.FactionCategory
+               .Where(fc => fc.FactionId == army.FactionId)
+               .ToList();
+            var faction = _db.Faction.Find(army.FactionId);
+            if (faction == null)
+            {
+                return NotFound();
+            }
+            var factionUnits = new FactionUnits
+            {
+                Faction = faction,
+                FactionCategoriesUnitLists = new List<FactionCategoryUnitList>()
+            };
+
+            foreach (FactionCategory factionCategory in factionCategories)
+            {
+                var unit = _db.Unit
+                    .Where(unit => unit.FactionCategoryId == factionCategory.FactionCategoryId)
+                    .ToList();
+                var factionCategoryUnitList = new FactionCategoryUnitList
+                {
+                    FactionCategory = factionCategory,
+                    Units = unit
+                };
+                factionUnits.FactionCategoriesUnitLists.Add(factionCategoryUnitList);
+            }
+            ViewBag.FactionUnits = factionUnits;
+
+            return View(army); // Pass the army details to the view
+        }
+
     }
 }

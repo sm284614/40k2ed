@@ -17,6 +17,8 @@
 mono_crash.*
 
 /40k2ed/40k2ed/wwwroot/image/unit/*
+/40k2ed/40k2ed/wwwroot/image/unit/*
+wwwroot/image/unit/*
 
 # Build results
 [Dd]ebug/

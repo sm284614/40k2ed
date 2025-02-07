@@ -9,18 +9,6 @@
 <div class="container mt-4">
     <h1 class="text-center">Create New Army</h1>
 
-@*     <!-- Faction Selection -->
-    <div class="d-flex flex-wrap justify-content-center my-3">
-        @foreach (var faction in factions)
-        {
-            <label class="m-2">
-                <input type="radio" name="FactionId" value="@faction.FactionId" required />
-                <img src="~/image/faction/icon/@(faction.Name).svg" alt="@faction.Name" class="faction-icon">
-                <br>
-                @faction.Name
-            </label>
-        }
-    </div> *@
 
     <!-- Army Creation Form -->
     <form asp-action="Create" method="post">
@@ -30,7 +18,7 @@
             <label for="FactionId" class="form-label">Select Faction</label>
             <select asp-for="FactionId" class="form-control" required>
                 <option value="">-- Select a Faction --</option>
-                @foreach (var faction in ViewBag.Factions as List<Faction>)
+                @foreach (var faction in factions)
                 {
                     <option value="@faction.FactionId">@faction.Name</option>
                 }

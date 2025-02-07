@@ -3,6 +3,7 @@
     public class ArmyViewModel
     {
         public long ArmyID { get; set; }
+        public string UserId { get; set; } = "";
         public int FactionId { get; set; }
         public string FactionName { get; set; } = ""; // For displaying the faction name
         public string Name { get; set; } = "";

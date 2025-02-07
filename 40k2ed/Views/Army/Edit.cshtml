@@ -1,0 +1,103 @@
+﻿@using _40k2ed.Models.ViewModels
+@using _40k2ed.Models.EntityModels
+@inject Microsoft.AspNetCore.Identity.UserManager<ApplicationUser> _userManager;
+@model ArmyViewModel
+
+@{
+	var factionCategoryUnitLists = ViewBag.FactionUnits.FactionCategoriesUnitLists as List<FactionCategoryUnitList>;
+}
+
+<div class="container">
+	<div class="container-fluid">
+		<div class="d-flex justify-content-between align-items-center">
+			<h1>@Model.Name</h1>
+			<a href="#" class="btn btn-secondary align-middle" data-army-id="@Model.ArmyID" data-army-name="@Model.Name" onclick="confirmDelete(this)">
+				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
+					<path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z" />
+				</svg>
+				Delete
+			</a>
+		</div>
+		<div>
+			<img src="@($"/image/faction/icon/{Model.FactionName}.svg")" style="height:30px; width: 30px;">
+			@Model.FactionName
+			(@Model.PointsLimit points)
+			- Created on @Model.DateCreated
+		</div>
+	</div>
+	<div class="d-flex" p-1>
+		<div class="flex-shrink-0 bg-body-secondary rounded-3 p-2 border border-1" style="width: 20%;">
+			<!-- Left Section -->
+			@foreach (FactionCategoryUnitList factionUnitList in factionCategoryUnitLists)
+			{
+				<div class="mb-3 bg-primary-subtle border border-1">
+					<div class="category-header d-flex align-items-center" onclick="toggleCategory(this)">
+						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+							 class="bi bi-caret-down-fill toggle-icon" viewBox="0 0 16 16">
+							<path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z" />
+						</svg>
+						<h4 class="ms-2 mb-0">@factionUnitList.FactionCategory.Name</h4>
+					</div>
+
+					<div class="unit-list ps-1 mt-2">
+						@foreach (Unit unit in factionUnitList.Units)
+						{
+							<div>
+								<a asp-controller="Unit" asp-action="Index" asp-route-unitId="@unit.UnitId" class="">
+									@unit.Cost pts @unit.Name
+								</a>
+							</div>
+						}
+					</div>
+				</div>
+			}
+		</div>
+
+		<div class="flex-grow-1 bg-body-secondary rounded-3 p-2 border border-1">
+			<!-- Middle Section (fills remaining space) -->
+
+		</div>
+
+		<div class="flex-shrink-0 bg-body-secondary rounded-3 p-2 border border-1" style="width: 20%;">
+			<!-- Right Section -->
+
+		</div>
+	</div>
+
+</div>
+
+<script type="text/javascript">
+	function confirmDelete(element) {
+		var armyId = $(element).data('army-id');
+		var description = $(element).data('army-name');
+
+		// Show confirmation dialog
+		var confirmation = confirm('Really delete "' + description + '"?');
+
+		if (confirmation) {
+			// If confirmed, redirect to the delete action
+			window.location.href = '/Army/Delete?armyId=' + armyId;
+		}
+	}
+</script>
+
+<script>
+	function toggleCategory(header) {
+		var unitList = header.nextElementSibling; // The unit list div
+		var icon = header.querySelector(".toggle-icon"); // The icon in the header
+
+		if (unitList.style.display === "none" || unitList.style.display === "") {
+			unitList.style.display = "block"; // Expand
+			icon.innerHTML = `<path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />`; // Change to caret-down
+		} else {
+			unitList.style.display = "none"; // Collapse
+			icon.innerHTML = `<path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z" />`; // Change to caret-right
+		}
+	}
+
+	// Hide all unit lists initially
+	document.addEventListener("DOMContentLoaded", function () {
+		document.querySelectorAll(".unit-list").forEach(list => list.style.display = "none");
+	});
+</script>
+

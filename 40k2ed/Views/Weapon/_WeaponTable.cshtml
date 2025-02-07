@@ -13,36 +13,54 @@
 				</td>
 			</tr>
 			<tr>
-				<th class="sortable" rowspan="2" onclick="sortTable(0)">Weapon</th>
-				<th class="sortable" colspan="2">Range</th>
-				<th class="sortable" colspan="2">To Hit</th>
-				<th class="sortable" rowspan="2" onclick="sortTable(5)">Strength</th>
-				<th class="sortable" rowspan="2" onclick="sortTable(6)">Damage</th>
-				<th class="sortable" rowspan="2" onclick="sortTable(7)">Save<br />Mod.</th>
-				<th class="sortable" rowspan="2" onclick="sortTable(8)">Armour<br />Pene.</th>
-				<th class="" rowspan="2">Special</th>
+				<th class="sortable borderright borderbottom ps-3" rowspan="2" onclick="sortTable(0)">Weapon</th>
+				<th class="sortable text-center borderright" colspan="2">Range</th>
+				<th class="sortable text-center borderright" colspan="2">To Hit</th>
+				<th class="sortable text-center borderright borderbottom" rowspan="2" onclick="sortTable(5)">Strength</th>
+				<th class="sortable text-center borderright borderbottom" rowspan="2" onclick="sortTable(6)">Damage</th>
+				<th class="sortable text-center borderright borderbottom" rowspan="2" onclick="sortTable(7)">Save<br />Mod.</th>
+				<th class="sortable text-center borderright borderbottom" rowspan="2" onclick="sortTable(8)">Armour<br />Penetration</th>
+				<th class="sortable borderbottom ps-3" rowspan="2">Special</th>
 			</tr>
 			<tr>
-				<th class="sortable" onclick="sortTable(1)">Short</th>
-				<th class="sortable" onclick="sortTable(2)">Long</th>
-				<th class="sortable" onclick="sortTable(3)">Short</th>
-				<th class="sortable" onclick="sortTable(4)">Long</th>
+				<th class="sortable text-center borderbottom" onclick="sortTable(1)">Short</th>
+				<th class="sortable text-center borderright borderbottom" onclick="sortTable(2)">Long</th>
+				<th class="sortable text-center borderbottom" onclick="sortTable(3)">Short</th>
+				<th class="sortable text-center borderright borderbottom" onclick="sortTable(4)">Long</th>
 			</tr>
 		</thead>
 		<tbody>
 			@foreach (WeaponWithAllRules row in Model.Weapons)
 			{
 				<tr onclick="window.location='@Url.Action("Detail", "Weapon", new { weaponId = row.Weapon.WeaponId })'" class="weapontablerow">
-					<td class="text-start">@row.Weapon.Name</td>
-					<td class="text-center">@row.Weapon.ShortRangeStart</td>
-					<td class="text-center">@row.Weapon.LongRangeStart</td>
-					<td class="text-center">@row.Weapon.ToHitShort</td>
-					<td class="text-center">@row.Weapon.ToHitLong</td>
-					<td class="text-center">@row.Weapon.Strength</td>
-					<td class="text-center">@row.Weapon.Damage</td>
-					<td class="text-center">@row.Weapon.SaveModifier</td>
-					<td class="text-center">@row.Weapon.ArmourPenetration</td>
-					<td class="text-start">
+					<td class="text-start borderright ps-3">@row.Weapon.Name</td>
+					@if (row.Weapon.ShortRangeStart == "cc")
+					{
+						<td class="text-center borderright" colspan="4">Close combat only</td>
+					}
+					else if (row.Weapon.ShortRangeStart.ToLower() == "template")
+					{
+						<td class="text-center borderright" colspan="2">Template</td>
+						<td class="text-center borderright" colspan="2">Special</td>
+					}
+					else if (row.Weapon.ShortRangeStart.ToLower() == "special")
+					{
+						<td class="text-center borderright" colspan="2">Special</td>
+						<td class="text-center">@row.Weapon.ToHitShort</td>
+						<td class="text-center borderright">@row.Weapon.ToHitLong</td>
+					}
+					else
+					{
+						<td class="text-center">@row.Weapon.ShortRangeStart</td>
+						<td class="text-center borderright">@row.Weapon.LongRangeStart</td>
+						<td class="text-center">@row.Weapon.ToHitShort</td>
+						<td class="text-center borderright">@row.Weapon.ToHitLong</td>
+					}
+					<td class="text-center borderright">@row.Weapon.Strength</td>
+					<td class="text-center borderright">@row.Weapon.Damage</td>
+					<td class="text-center borderright">@row.Weapon.SaveModifier</td>
+					<td class="text-center borderright">@row.Weapon.ArmourPenetration</td>
+					<td class="text-start ps-3">
 							@foreach (WeaponRule rule in row.SpecialRules)
 							{
 								@rule.Name
