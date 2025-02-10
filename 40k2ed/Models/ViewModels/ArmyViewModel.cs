@@ -1,4 +1,6 @@
-﻿namespace _40k2ed.Models.ViewModels
+﻿using _40k2ed.Models.EntityModels;
+
+namespace _40k2ed.Models.ViewModels
 {
     public class ArmyViewModel
     {
@@ -10,7 +12,7 @@
         public string? Description { get; set; } = "";
         public int PointsLimit { get; set; }
         public DateTime DateCreated { get; set; }
-
+        public List<ArmyUnit> ArmyUnits { get; set; } = new List<ArmyUnit>();
     }
 
 }

@@ -154,7 +154,12 @@ namespace _40k2ed.Controllers
             {
                 return Forbid(); // Prevent unauthorized access
             }
-            //get faction units
+            var armyUnits = await _db.ArmyUnit
+                .Where(au => au.ArmyId == armyId)
+                .ToListAsync();
+            army.ArmyUnits = armyUnits;
+
+            //get faction units so user can add units to their army
             var factionCategories = _db.FactionCategory
                .Where(fc => fc.FactionId == army.FactionId)
                .ToList();
@@ -173,6 +178,7 @@ namespace _40k2ed.Controllers
             {
                 var unit = _db.Unit
                     .Where(unit => unit.FactionCategoryId == factionCategory.FactionCategoryId)
+                    .OrderBy(unit => unit.CodexOrder)
                     .ToList();
                 var factionCategoryUnitList = new FactionCategoryUnitList
                 {
@@ -185,6 +191,63 @@ namespace _40k2ed.Controllers
 
             return View(army); // Pass the army details to the view
         }
+        [HttpPost]
+        public async Task<IActionResult> AddUnit(long armyId, int unitId)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return Unauthorized(); // Ensure user is logged in
+            }
+            var army = await _db.Army.FindAsync(armyId);
+            if (army == null)
+            {
+                return NotFound();
+            }
+            if (army.UserId != user.Id)
+            {
+                return Forbid(); // Prevent unauthorized access
+            }
 
+            var armyUnit = new ArmyUnit
+            {
+                ArmyId = (int)armyId,
+                UnitId = unitId,
+                FactionCategoryId = 1 // Set based on your logic
+            };
+
+            _db.ArmyUnit.Add(armyUnit);
+            await _db.SaveChangesAsync();
+
+            var armyUnits = await _db.ArmyUnit.Where(au => au.ArmyId == armyId).ToListAsync();
+
+            return PartialView("_ArmyUnitList", armyUnits); // Return the updated unit list (partial view)
+        }
+        [HttpPost]
+        public async Task<IActionResult> DeleteUnit(long armyId, long armyUnitId)
+        {
+            var user = await _userManager.GetUserAsync(User); //get user
+            if (user == null)
+            {
+                return Unauthorized(); 
+            }
+            var army = await _db.Army.FindAsync(armyId); //get army
+            if (army == null)
+            {
+                return NotFound();
+            }
+            if (army.UserId != user.Id) //check ownership
+            {
+                return Forbid(); 
+            }
+            var armyUnit = await _db.ArmyUnit.FindAsync(armyUnitId); //get army unit
+            if (armyUnit != null)
+            {
+                _db.ArmyUnit.Remove(armyUnit);
+                await _db.SaveChangesAsync();
+            }
+            var armyUnits = await _db.ArmyUnit.Where(au => au.ArmyId == Convert.ToInt64(armyId)).ToListAsync();
+            return PartialView("_ArmyUnitList", armyUnits); // Return the updated unit list (partial view)
+        }
     }
 }

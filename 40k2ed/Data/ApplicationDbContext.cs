@@ -22,6 +22,7 @@ namespace _40k2ed.Data
         public DbSet<Faction> Faction { get; set; }
         public DbSet<FactionCategory> FactionCategory { get; set; }
         public DbSet<Army> Army { get; set; }
+        public DbSet<ArmyUnit> ArmyUnit { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder); // Ensures Identity tables are configured properly
